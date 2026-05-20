@@ -5,7 +5,7 @@
 // Change this to your deployed backend URL when hosting online
 // e.g. "https://nutri-info-api.onrender.com"
 // Auto-detects whether you open from localhost or network IP (Live Server)
-const API_BASE = `${window.location.protocol}//${window.location.hostname}:5000`;
+const API_BASE = "https://nutri-info-qsov.onrender.com";
 
 // ── State ──────────────────────────────────────────────────────────────
 const S = { history: [], log: [] };
