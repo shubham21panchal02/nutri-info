@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriInfo — AI Nutrition Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-logo" onclick="navigate('home')">
+      <span class="nav-logo-text">NutriInfo</span>
+      <div class="nav-logo-dot"></div>
+    </div>
+    <div class="nav-links" id="navLinks">
+      <button class="nav-link active" onclick="navigate('home')" data-page="home">🏠 Home</button>
+      <button class="nav-link" onclick="navigate('category')" data-page="category">🗂 Categories</button>
+      <button class="nav-link" onclick="navigate('nutrition')" data-page="nutrition">📋 Log</button>
+      <button class="nav-link" onclick="navigate('about')" data-page="about">ℹ️ About</button>
+    </div>
+    <button class="nav-burger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  </nav>
+
+  <!-- ════ HOME PAGE ════ -->
+  <div class="page active" id="page-home">
+    <section class="hero">
+      <h1 class="hero-title">Know what's in <em>everything</em><br />you eat</h1>
+      <p class="hero-sub">Free AI-powered nutrition analysis — no credit card, no limits</p>
+      <div class="search-bar">
+        <input class="search-input" id="searchInput" type="text"
+          placeholder="e.g. 100g grilled salmon, 2 eggs, avocado toast…" autocomplete="off" />
+        <button class="search-btn" id="searchBtn">Analyze →</button>
+      </div>
+      <div class="quick-tags">
+        <span class="qtag" onclick="quickSearch('Avocado')">🥑 Avocado</span>
+        <span class="qtag" onclick="quickSearch('Brown rice 1 cup cooked')">🍚 Brown Rice</span>
+        <span class="qtag" onclick="quickSearch('Chicken breast 100g grilled')">🍗 Chicken Breast</span>
+        <span class="qtag" onclick="quickSearch('Greek yogurt full fat')">🥛 Greek Yogurt</span>
+        <span class="qtag" onclick="quickSearch('Banana medium')">🍌 Banana</span>
+        <span class="qtag" onclick="quickSearch('Almonds 30g')">🌰 Almonds</span>
+      </div>
+    </section>
+
+    <!-- Recent History Bar -->
+    <div class="history-strip" id="historyStrip">
+      <span class="history-label">Recent</span>
+      <div class="history-items-wrap" id="historyWrap"></div>
+      <button class="history-clear-all" onclick="clearAllHistory()">Clear all ×</button>
+    </div>
+
+    <!-- Content States -->
+    <div class="main">
+      <div id="emptyState" class="empty-state">
+        <span class="empty-icon">🥗</span>
+        <h2>Start with any food</h2>
+        <p>Type any food name, ingredient, or meal to get complete nutrition data, health scores, and expert tips.</p>
+      </div>
+      <div id="loadingState" style="display:none" class="loading-state">
+        <div class="spinner"></div>
+        <p class="loading-text">Analyzing nutrition…</p>
+        <p class="loading-sub" id="loadingSub">Pulling data for your food</p>
+      </div>
+      <div id="errorState" style="display:none"></div>
+      <div id="resultState" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- ════ CATEGORY PAGE ════ -->
+  <div class="page" id="page-category">
+    <section class="page-hero">
+      <h1 class="page-hero-title">Browse by Category</h1>
+      <p class="page-hero-sub">Explore 80+ foods by type — click any item to analyze instantly</p>
+    </section>
+    <div class="main">
+      <div id="catBrowseView">
+        <div class="cat-filter-row" id="catFilterRow"></div>
+        <div class="cat-grid" id="catGrid"></div>
+      </div>
+      <div id="catDetailView" style="display:none">
+        <button class="back-btn" onclick="showCatBrowse()">← Back to categories</button>
+        <h2 class="cat-detail-title" id="catDetailTitle"></h2>
+        <div class="cat-food-grid" id="catFoodGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ NUTRITION LOG PAGE ════ -->
+  <div class="page" id="page-nutrition">
+    <section class="page-hero">
+      <h1 class="page-hero-title">Your Nutrition Log</h1>
+      <p class="page-hero-sub">Every food you analyze — tracked with live macro totals</p>
+    </section>
+    <div class="main">
+      <div class="log-topbar">
+        <span class="log-title">Analyzed Foods</span>
+        <button class="log-clear-btn" onclick="clearLog()">🗑 Clear log</button>
+      </div>
+      <div class="log-summary" id="logSummary"></div>
+      <div id="logContent"></div>
+    </div>
+  </div>
+
+  <!-- ════ ABOUT PAGE ════ -->
+  <div class="page" id="page-about">
+    <section class="page-hero">
+      <h1 class="page-hero-title">About NutriInfo</h1>
+      <p class="page-hero-sub">Free AI nutrition intelligence powered by Groq + Llama 3</p>
+    </section>
+    <div class="main">
+      <div class="stat-strip">
+        <div class="stat-cell"><div class="stat-num">FREE</div><div class="stat-desc">No credit card</div></div>
+        <div class="stat-cell"><div class="stat-num">8+</div><div class="stat-desc">Nutrients tracked</div></div>
+        <div class="stat-cell"><div class="stat-num">80+</div><div class="stat-desc">Foods in browser</div></div>
+        <div class="stat-cell"><div class="stat-num">⚡</div><div class="stat-desc">Groq ultra-fast AI</div></div>
+      </div>
+      <div class="page-section">
+        <h2 class="section-heading">What is NutriInfo?</h2>
+        <div class="about-grid">
+          <div class="about-card"><span class="about-card-icon">🤖</span><div class="about-card-title">Groq + Llama 3 Backend</div><p class="about-card-text">NutriInfo uses Groq's free API with Meta's Llama 3.3 70B model. Your API key stays safely in the backend .env file — never exposed to the browser.</p></div>
+          <div class="about-card"><span class="about-card-icon">📊</span><div class="about-card-title">Complete Nutrition Data</div><p class="about-card-text">Calories, macros, fiber, 8 vitamins and minerals, health score (1–10), smart badges, daily goal comparisons, and personalized diet tips for every food.</p></div>
+          <div class="about-card"><span class="about-card-icon">🗂</span><div class="about-card-title">Category Browser</div><p class="about-card-text">80+ curated foods across 7 categories — Fruits, Vegetables, Proteins, Grains, Dairy, Nuts, and Legumes. One click sends any food to the AI analyzer.</p></div>
+          <div class="about-card"><span class="about-card-icon">📋</span><div class="about-card-title">Nutrition Log</div><p class="about-card-text">Every analyzed food is saved to your session log with cumulative calorie and macro tracking. Delete individual entries or clear the whole log anytime.</p></div>
+          <div class="about-card"><span class="about-card-icon">🔒</span><div class="about-card-title">Secure Architecture</div><p class="about-card-text">API key lives in a backend .env file — never in client code. The Express backend proxies all AI requests securely. Frontend only talks to your own server.</p></div>
+          <div class="about-card"><span class="about-card-icon">🚀</span><div class="about-card-title">Deploy Anywhere</div><p class="about-card-text">Deploy the backend to Railway, Render, or Fly.io for free. Host the frontend on Vercel or Netlify. Full deployment guide in README.md.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-links">
+      <span class="footer-link" onclick="navigate('home')">Home</span>
+      <span class="footer-link" onclick="navigate('category')">Categories</span>
+      <span class="footer-link" onclick="navigate('nutrition')">Nutrition Log</span>
+      <span class="footer-link" onclick="navigate('about')">About</span>
+    </div>
+    <p class="footer-copy">NutriInfo © 2025 — Free AI nutrition analysis powered by Groq + Llama 3</p>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
