@@ -2,8 +2,6 @@
 // app.js — NutriInfo Frontend Logic
 // ─────────────────────────────────────────
 
-// Change this to your deployed backend URL when hosting online
-// e.g. "https://nutri-info-api.onrender.com"
 // Auto-detects whether you open from localhost or network IP (Live Server)
 const API_BASE = "https://nutri-info-qsov.onrender.com";
 
@@ -74,7 +72,7 @@ const LOADING_MSGS = [
 ];
 let loadTimer = null;
 
-// ── Analyze (calls backend) ────────────────────────────────────────────
+// ── Analyze ────────────────────────────────────────────────────────────
 async function analyze(query) {
   navigate("home");
   showPanel("loadingState");
@@ -191,9 +189,9 @@ function renderLog() {
   const tot = S.log.reduce(
     (a, item) => {
       a.cal += item.data.calories || 0;
-      a.p += item.data.macros?.protein?.g || 0;
-      a.c += item.data.macros?.carbs?.g || 0;
-      a.f += item.data.macros?.fat?.g || 0;
+      a.p   += item.data.macros?.protein?.g || 0;
+      a.c   += item.data.macros?.carbs?.g   || 0;
+      a.f   += item.data.macros?.fat?.g     || 0;
       return a;
     },
     { cal: 0, p: 0, c: 0, f: 0 }
@@ -209,42 +207,35 @@ function renderLog() {
   const groups = {};
   S.log.forEach((item, i) => {
     const key = new Date(item.ts).toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
+      weekday: "short", month: "short", day: "numeric",
     });
     if (!groups[key]) groups[key] = [];
     groups[key].push({ ...item, idx: i });
   });
 
-  const scMap = {
-    Excellent: "#2d6a4f",
-    Good: "#3d7a1a",
-    Moderate: "#b8820c",
-    Poor: "#c04a2a",
-  };
+  const scMap = { Excellent: "#2d6a4f", Good: "#3d7a1a", Moderate: "#b8820c", Poor: "#c04a2a" };
 
   let html = '<div class="log-list">';
   Object.entries(groups).forEach(([date, items]) => {
     html += `<div class="log-date-group">${date}</div>`;
     items.forEach((item) => {
-      const d = item.data;
+      const d  = item.data;
       const sc = scMap[d.health_label] || "#888";
       html += `
         <div class="log-item">
           <span class="log-item-emoji">${d.emoji || "🍽"}</span>
           <div class="log-item-info">
-            <div class="log-item-name">${d.food_name}</div>
-            <div class="log-item-meta">${d.serving_size} · ${d.category}</div>
+            <div class="log-item-name">${d.food_name || "Unknown food"}</div>
+            <div class="log-item-meta">${d.serving_size || "—"} · ${d.category || "—"}</div>
             <div class="log-item-macros">
-              <span class="log-macro-pill" style="background:#e8f5ee;color:#1b4332">P: ${d.macros?.protein?.g}g</span>
-              <span class="log-macro-pill" style="background:#fdf6e3;color:#7a5c0a">C: ${d.macros?.carbs?.g}g</span>
-              <span class="log-macro-pill" style="background:#fdeee9;color:#7a2d14">F: ${d.macros?.fat?.g}g</span>
-              <span class="log-macro-pill" style="background:#f0ede4;color:#555">Score: <b style="color:${sc}">${d.health_score}/10</b></span>
+              <span class="log-macro-pill" style="background:#e8f5ee;color:#1b4332">P: ${d.macros?.protein?.g ?? "—"}g</span>
+              <span class="log-macro-pill" style="background:#fdf6e3;color:#7a5c0a">C: ${d.macros?.carbs?.g ?? "—"}g</span>
+              <span class="log-macro-pill" style="background:#fdeee9;color:#7a2d14">F: ${d.macros?.fat?.g ?? "—"}g</span>
+              <span class="log-macro-pill" style="background:#f0ede4;color:#555">Score: <b style="color:${sc}">${d.health_score ?? "—"}/10</b></span>
             </div>
           </div>
           <div class="log-item-kcal">
-            <div class="log-kcal-num">${d.calories}</div>
+            <div class="log-kcal-num">${d.calories ?? "—"}</div>
             <div class="log-kcal-unit">kcal</div>
           </div>
           <div class="log-item-actions">
@@ -264,16 +255,13 @@ function initCatPage() {
   fr.innerHTML =
     `<button class="cat-filter-btn active" onclick="filterCats('all',this)">All</button>` +
     CATS.map(
-      (c) =>
-        `<button class="cat-filter-btn" onclick="filterCats('${c.id}',this)">${c.emoji} ${c.name}</button>`
+      (c) => `<button class="cat-filter-btn" onclick="filterCats('${c.id}',this)">${c.emoji} ${c.name}</button>`
     ).join("");
   renderCatGrid("all");
 }
 
 function filterCats(id, btn) {
-  document
-    .querySelectorAll(".cat-filter-btn")
-    .forEach((b) => b.classList.remove("active"));
+  document.querySelectorAll(".cat-filter-btn").forEach((b) => b.classList.remove("active"));
   if (btn) btn.classList.add("active");
   renderCatGrid(id);
 }
@@ -281,15 +269,12 @@ function filterCats(id, btn) {
 function renderCatGrid(id) {
   const cats = id === "all" ? CATS : CATS.filter((c) => c.id === id);
   document.getElementById("catGrid").innerHTML = cats
-    .map(
-      (c) => `
+    .map((c) => `
     <div class="cat-card" onclick="openCatDetail('${c.id}')">
       <span class="cat-emoji">${c.emoji}</span>
       <div class="cat-name">${c.name}</div>
       <div class="cat-count">${c.desc}</div>
-    </div>`
-    )
-    .join("");
+    </div>`).join("");
 }
 
 function openCatDetail(id) {
@@ -299,17 +284,14 @@ function openCatDetail(id) {
   document.getElementById("catDetailView").style.display = "block";
   document.getElementById("catDetailTitle").textContent = cat.emoji + " " + cat.name;
   document.getElementById("catFoodGrid").innerHTML = cat.foods
-    .map(
-      (f) => `
+    .map((f) => `
     <div class="cat-food-item" onclick="analyzeFromCat(${JSON.stringify(f.n)})">
       <span class="cat-food-emoji">${f.e}</span>
       <div>
         <div class="cat-food-name">${f.n}</div>
         <div class="cat-food-kcal">~${f.k} kcal</div>
       </div>
-    </div>`
-    )
-    .join("");
+    </div>`).join("");
 }
 
 function showCatBrowse() {
@@ -325,30 +307,69 @@ function analyzeFromCat(q) {
   }, 60);
 }
 
+// ── Safe getter helpers ────────────────────────────────────────────────
+function safeVal(obj, key, fallback = 0) {
+  return obj && obj[key] != null ? obj[key] : fallback;
+}
+function safeUnit(obj, key, fallback = "") {
+  return obj && obj[key] ? obj[key] : fallback;
+}
+
 // ── Render Result ──────────────────────────────────────────────────────
 function renderResult(d) {
-  const sClass =
-    { Excellent: "excellent", Good: "good", Moderate: "moderate", Poor: "poor" }[d.health_label] || "moderate";
-  const mC = { protein: "#2d6a4f", carbs: "#d4a017", fat: "#e76f51", fiber: "#5f9ea0" };
-  const mMax = Math.max(d.macros.protein.g, d.macros.carbs.g, d.macros.fat.g, 1);
-  const pct = Math.min(d.daily_calories_pct, 100);
-  const r = 56, circ = 2 * Math.PI * r, dash = (pct / 100) * circ;
-  const rc =
-    sClass === "excellent" || sClass === "good"
-      ? "#2d6a4f"
-      : sClass === "moderate"
-      ? "#d4a017"
-      : "#e76f51";
+  if (!d) {
+    showPanel("errorState");
+    document.getElementById("errorState").innerHTML =
+      `<div class="error-box">⚠️ <strong>No data returned.</strong> Please try again.</div>`;
+    return;
+  }
+
+  // Safe defaults for every field
+  const foodName    = d.food_name    || "Unknown Food";
+  const emoji       = d.emoji        || "🍽";
+  const category    = d.category     || "—";
+  const serving     = d.serving_size || "—";
+  const calories    = d.calories     || 0;
+  const dailyPct    = d.daily_calories_pct || 0;
+  const healthScore = d.health_score || 0;
+  const healthLabel = d.health_label || "Moderate";
+  const healthSum   = d.health_summary || "";
+  const macros      = d.macros       || {};
+  const nutrients   = d.nutrients    || {};
+  const units       = d.nutrient_units || {};
+  const badges      = d.badges       || [];
+  const tips        = d.tips         || [];
+  const comparison  = d.comparison   || [];
+
+  const sClass = { Excellent: "excellent", Good: "good", Moderate: "moderate", Poor: "poor" }[healthLabel] || "moderate";
+  const mC     = { protein: "#2d6a4f", carbs: "#d4a017", fat: "#e76f51", fiber: "#5f9ea0" };
+
+  const protein = macros.protein || { g: 0, pct_calories: 0 };
+  const carbs   = macros.carbs   || { g: 0, pct_calories: 0 };
+  const fat     = macros.fat     || { g: 0, pct_calories: 0 };
+  const fiber   = macros.fiber   || { g: 0 };
+
+  const mMax = Math.max(protein.g, carbs.g, fat.g, 1);
+  const pct  = Math.min(dailyPct, 100);
+  const r    = 56, circ = 2 * Math.PI * r, dash = (pct / 100) * circ;
+  const rc   = (sClass === "excellent" || sClass === "good") ? "#2d6a4f" : sClass === "moderate" ? "#d4a017" : "#e76f51";
+
+  const macroRows = [
+    { key: "protein", label: "Protein", data: protein },
+    { key: "carbs",   label: "Carbs",   data: carbs   },
+    { key: "fat",     label: "Fat",     data: fat     },
+    { key: "fiber",   label: "Fiber",   data: fiber   },
+  ];
 
   const nKeys = [
     ["saturated_fat", "Sat. Fat"],
-    ["sugar", "Sugar"],
-    ["sodium", "Sodium"],
-    ["potassium", "Potassium"],
-    ["calcium", "Calcium"],
-    ["iron", "Iron"],
-    ["vitamin_c", "Vitamin C"],
-    ["vitamin_a", "Vitamin A"],
+    ["sugar",         "Sugar"    ],
+    ["sodium",        "Sodium"   ],
+    ["potassium",     "Potassium"],
+    ["calcium",       "Calcium"  ],
+    ["iron",          "Iron"     ],
+    ["vitamin_c",     "Vitamin C"],
+    ["vitamin_a",     "Vitamin A"],
   ];
 
   document.getElementById("resultState").innerHTML = `
@@ -357,14 +378,14 @@ function renderResult(d) {
     <!-- Left: Food Card -->
     <div class="food-card">
       <div class="food-header">
-        <span class="food-emoji">${d.emoji}</span>
-        <div class="food-name">${d.food_name}</div>
-        <div class="food-cat-badge">${d.category}</div>
+        <span class="food-emoji">${emoji}</span>
+        <div class="food-name">${foodName}</div>
+        <div class="food-cat-badge">${category}</div>
       </div>
       <div class="serving-info">
         <span>⚖️</span>
         <span class="serving-label">Serving size</span>
-        <span class="serving-value">${d.serving_size}</span>
+        <span class="serving-value">${serving}</span>
       </div>
       <div class="calorie-section">
         <div class="calorie-ring">
@@ -375,30 +396,28 @@ function renderResult(d) {
               stroke-dasharray="${dash} ${circ}"/>
           </svg>
           <div class="calorie-center">
-            <span class="calorie-num">${d.calories}</span>
+            <span class="calorie-num">${calories}</span>
             <span class="calorie-unit">kcal</span>
           </div>
         </div>
-        <p class="calorie-daily">${d.daily_calories_pct}% of daily calories</p>
+        <p class="calorie-daily">${dailyPct}% of daily calories</p>
       </div>
       <div class="macros">
-        ${["protein", "carbs", "fat", "fiber"]
-          .map((m) => {
-            const g = d.macros[m].g;
-            const bp = Math.round((g / mMax) * 100);
-            const ex = m === "fiber" ? "" : ` · ${d.macros[m].pct_calories || "—"}% cal`;
-            return `
+        ${macroRows.map(({ key, label, data }) => {
+          const g  = data.g || 0;
+          const bp = Math.round((g / mMax) * 100);
+          const ex = key === "fiber" ? "" : ` · ${data.pct_calories || "—"}% cal`;
+          return `
           <div class="macro-row">
             <div class="macro-header">
-              <span class="macro-name">${m.charAt(0).toUpperCase() + m.slice(1)}</span>
+              <span class="macro-name">${label}</span>
               <span class="macro-val">${g}g${ex}</span>
             </div>
             <div class="macro-bar-bg">
-              <div class="macro-bar-fill" data-w="${bp}" style="background:${mC[m]}"></div>
+              <div class="macro-bar-fill" data-w="${bp}" style="background:${mC[key]}"></div>
             </div>
           </div>`;
-          })
-          .join("")}
+        }).join("")}
       </div>
     </div>
 
@@ -414,15 +433,13 @@ function renderResult(d) {
         <div class="section-body">
           <div class="health-score-wrap">
             <div class="score-circle ${sClass}">
-              ${d.health_score}
+              ${healthScore}
               <span class="score-label">/10</span>
             </div>
-            <p class="score-desc">${d.health_summary}</p>
+            <p class="score-desc">${healthSum}</p>
           </div>
           <div class="badge-row">
-            ${(d.badges || [])
-              .map((b) => `<span class="badge badge-${b.type}">${b.text}</span>`)
-              .join("")}
+            ${badges.map((b) => `<span class="badge badge-${b.type || "blue"}">${b.text || ""}</span>`).join("")}
           </div>
         </div>
       </div>
@@ -435,74 +452,61 @@ function renderResult(d) {
         </div>
         <div class="section-body">
           <div class="nutrient-grid">
-            ${nKeys
-              .map(([k, label]) => {
-                const v = d.nutrients[k];
-                if (v == null) return "";
-                return `
+            ${nKeys.map(([k, label]) => {
+              const v = nutrients[k];
+              if (v == null) return "";
+              const u = units[k] || "";
+              return `
               <div class="nutrient-chip">
                 <div class="nutrient-chip-name">${label}</div>
-                <div class="nutrient-chip-val">${v}<span class="nutrient-chip-unit"> ${d.nutrient_units[k]}</span></div>
+                <div class="nutrient-chip-val">${v}<span class="nutrient-chip-unit"> ${u}</span></div>
               </div>`;
-              })
-              .join("")}
+            }).join("")}
           </div>
         </div>
       </div>
 
       <!-- Daily Goal Comparison -->
-      ${
-        d.comparison?.length
-          ? `<div class="section-card">
+      ${comparison.length ? `
+      <div class="section-card">
         <div class="section-head">
           <div class="section-icon" style="background:#e6f0fb">📊</div>
           <span class="section-title">Daily Goal Comparison</span>
         </div>
         <div class="section-body">
           <div class="comparison-wrap">
-            ${d.comparison
-              .map((c) => {
-                const w = Math.min(Math.round((c.value / c.max) * 100), 100);
-                return `
+            ${comparison.map((c) => {
+              const w = Math.min(Math.round(((c.value || 0) / (c.max || 1)) * 100), 100);
+              return `
               <div class="cmp-row">
-                <span class="cmp-label">${c.label}</span>
+                <span class="cmp-label">${c.label || ""}</span>
                 <div class="cmp-bar-wrap">
-                  <div class="cmp-bar" style="width:${w}%;background:${c.color}"></div>
+                  <div class="cmp-bar" style="width:${w}%;background:${c.color || "#2d6a4f"}"></div>
                 </div>
-                <span class="cmp-val">${c.value}g</span>
+                <span class="cmp-val">${c.value || 0}g</span>
               </div>`;
-              })
-              .join("")}
+            }).join("")}
           </div>
         </div>
-      </div>`
-          : ""
-      }
+      </div>` : ""}
 
       <!-- Nutrition Tips -->
-      ${
-        d.tips?.length
-          ? `<div class="section-card">
+      ${tips.length ? `
+      <div class="section-card">
         <div class="section-head">
           <div class="section-icon" style="background:#fdeee9">💡</div>
           <span class="section-title">Nutrition Tips</span>
         </div>
         <div class="section-body">
           <ul class="tips-list">
-            ${d.tips
-              .map(
-                (t, i) => `
+            ${tips.map((t, i) => `
             <li class="tip-item">
               <span class="tip-bullet">${i + 1}</span>
               <span>${t}</span>
-            </li>`
-              )
-              .join("")}
+            </li>`).join("")}
           </ul>
         </div>
-      </div>`
-          : ""
-      }
+      </div>` : ""}
 
     </div>
   </div>`;
@@ -513,9 +517,7 @@ function renderResult(d) {
   requestAnimationFrame(() => {
     document.querySelectorAll(".macro-bar-fill[data-w]").forEach((b) => {
       const w = b.getAttribute("data-w");
-      setTimeout(() => {
-        b.style.width = w + "%";
-      }, 60);
+      setTimeout(() => { b.style.width = w + "%"; }, 60);
     });
   });
 }
