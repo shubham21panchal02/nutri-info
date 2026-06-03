@@ -602,3 +602,96 @@ body {
   .about-grid { grid-template-columns: repeat(3, 1fr); }
   .cat-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
 }
+/* ── Add these styles at the bottom of style.css ── */
+
+/* Developer Card */
+.dev-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+.dev-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+  color: white;
+  font-family: 'DM Serif Display', serif;
+  font-size: 24px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: -1px;
+}
+.dev-info { flex: 1; }
+.dev-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px; color: var(--ink);
+  margin-bottom: 3px;
+}
+.dev-role {
+  font-size: 13px; color: var(--accent);
+  font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.8px; margin-bottom: 0.75rem;
+}
+.dev-bio {
+  font-size: 14px; color: var(--ink-muted);
+  font-weight: 300; line-height: 1.7;
+  margin-bottom: 1rem;
+}
+.dev-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.dev-tag {
+  background: var(--accent-light);
+  color: var(--accent-dark);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Steps grid */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.step-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem; text-align: center;
+}
+.step-num { font-size: 28px; margin-bottom: 0.5rem; display: block; }
+.step-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 16px; color: var(--ink); margin-bottom: 0.4rem;
+}
+.step-text { font-size: 13px; color: var(--ink-muted); font-weight: 300; line-height: 1.6; }
+
+/* Built/Features grid */
+.built-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.built-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  display: flex; gap: 12px;
+}
+.built-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+.built-title { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
+.built-text { font-size: 12px; color: var(--ink-muted); font-weight: 300; line-height: 1.5; }
+
+/* Mobile responsive for dev card */
+@media (max-width: 620px) {
+  .dev-card { flex-direction: column; align-items: center; text-align: center; padding: 1.5rem; }
+  .dev-tags { justify-content: center; }
+  .steps-grid { grid-template-columns: 1fr; }
+  .built-grid { grid-template-columns: 1fr; }
+}
